@@ -1,5 +1,5 @@
 // Get an instance of mysql we can use in the app
-const mysql = require("mysql2");
+const mysql = require("mysql2/promise");
 require("dotenv").config();
 
 // Create a 'connection pool' using the provided credentials
@@ -10,7 +10,7 @@ const pool = mysql.createPool({
   user: process.env.DB_USER || "root",
   password: process.env.DB_PASSWORD || "your_default_password",
   database: process.env.DB_DATABASE || "your_default_database",
-}).promise();
+});
 
 // Export it for use in our application
 module.exports = pool;

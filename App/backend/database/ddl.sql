@@ -1,121 +1,155 @@
--- Disable foreign key checks temporarily
-SET
-    foreign_key_checks = 0;
+-- CS 340 Project Step 2 Draft
+-- Projct Title: Bike Rental System (BRS)
+-- Team: Group 24
+-- Members: Arvin Mirtorabi, Arstanbek Bulanbekov, Suhrob Hasanov
 
--- Planets table
-DROP TABLE IF EXISTS `bsg_planets`;
+SET FOREIGN_KEY_CHECKS=0;
+SET AUTOCOMMIT=0;
 
-CREATE TABLE `bsg_planets` (
-    `id` INT(11) NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(255) NOT NULL,
-    `population` BIGINT(20) DEFAULT NULL,
-    `language` VARCHAR(255) DEFAULT NULL,
-    `capital` VARCHAR(255) DEFAULT NULL,
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `name` (`name`)
+DROP TABLE IF EXISTS CustomerPayments;
+DROP TABLE IF EXISTS RentalBikes;
+DROP TABLE IF EXISTS BikeMaintenanceLogs;
+DROP TABLE IF EXISTS MaintenanceLogs;
+DROP TABLE IF EXISTS Payments;
+DROP TABLE IF EXISTS Rentals;
+DROP TABLE IF EXISTS Bikes;
+DROP TABLE IF EXISTS Customers;
+
+-----------------------------------------------------
+-- Create Table Customers
+-----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS Customers (
+  customer_id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  email varchar(255) UNIQUE NOT NULL,
+  phone varchar(15) NOT NULL
 );
 
-INSERT INTO
-    `bsg_planets` (
-        `id`,
-        `name`,
-        `population`,
-        `language`,
-        `capital`
-    )
+-- Insert example data into Customers table
+INSERT INTO Customers (name, email, phone)
 VALUES
-    (
-        1,
-        'Gemenon',
-        2800000000,
-        'Old Gemenese',
-        'Oranu'
-    ),
-    (2, 'Leonis', 2600000000, 'Leonese', 'Luminere'),
-    (
-        3,
-        'Caprica',
-        4900000000,
-        'Caprican',
-        'Caprica City'
-    ),
-    (7, 'Sagittaron', 1700000000, NULL, 'Tawa'),
-    (16, 'Aquaria', 25000, NULL, NULL),
-    (17, 'Canceron', 6700000000, NULL, 'Hades'),
-    (18, 'Libran', 2100000, NULL, NULL),
-    (19, 'Picon', 1400000000, NULL, 'Queestown'),
-    (20, 'Scorpia', 450000000, NULL, 'Celeste'),
-    (21, 'Tauron', 2500000000, 'Tauron', 'Hypatia'),
-    (22, 'Virgon', 4300000000, NULL, 'Boskirk');
+('Johnny Crein', 'johnc@gmail.com', '671-222-1111'),
+('Mary Sigh', 'marysigh@gmail.com', '872-333-2222'),
+('Alison Doe', 'alisondoe@gmail.com', '312-444-3333');
 
--- Certification table
-DROP TABLE IF EXISTS `bsg_cert`;
+-----------------------------------------------------
+-- Create Table Bikes
+-----------------------------------------------------
 
-CREATE TABLE `bsg_cert` (
-    `id` INT(11) NOT NULL AUTO_INCREMENT,
-    `title` VARCHAR(255) NOT NULL,
-    PRIMARY KEY (`id`)
+CREATE TABLE IF NOT EXISTS Bikes (
+  bike_id INT AUTO_INCREMENT PRIMARY KEY,
+  type VARCHAR(100) NOT NULL,
+  status ENUM('available', 'rented', 'maintenance') NOT NULL,
+  hourly_rate DECIMAL(6,2) NOT NULL
 );
 
-INSERT INTO
-    `bsg_cert` (`id`, `title`)
+-- Insert example data into Bikes table
+INSERT INTO Bikes (type, status, hourly_rate)
 VALUES
-    (1, 'Raptor'),
-    (2, 'Viper'),
-    (3, 'Mechanic'),
-    (4, 'Command');
+('Mountain Bike', 'available', 10.00),
+('Road Bike', 'available', 15.00),
+('Electric Bike', 'available', 20.00);
 
--- People table
-DROP TABLE IF EXISTS `bsg_people`;
+-----------------------------------------------------
+-- Create Table Rentals
+-----------------------------------------------------
 
-CREATE TABLE `bsg_people` (
-    `id` INT(11) NOT NULL AUTO_INCREMENT,
-    `fname` VARCHAR(255) NOT NULL,
-    `lname` VARCHAR(255) DEFAULT NULL,
-    `homeworld` INT(11) DEFAULT NULL,
-    `age` INT(11) DEFAULT NULL,
-    PRIMARY KEY (`id`),
-    KEY `homeworld` (`homeworld`),
-    CONSTRAINT `bsg_people_ibfk_1` FOREIGN KEY (`homeworld`) REFERENCES `bsg_planets` (`id`) ON DELETE
-    SET
-        NULL ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 10 DEFAULT CHARSET = latin1;
-
-INSERT INTO
-    `bsg_people` (`id`, `fname`, `lname`, `homeworld`, `age`)
-VALUES
-    (1, 'William', 'Adama', 3, 61),
-    (2, 'Lee', 'Adama', 3, 30),
-    (3, 'Laura', 'Roslin', 3, NULL),
-    (4, 'Kara', 'Thrace', 3, NULL),
-    (5, 'Gaius', 'Baltar', 3, NULL),
-    (6, 'Saul', 'Tigh', NULL, 71),
-    (7, 'Karl', 'Agathon', 1, NULL),
-    (8, 'Galen', 'Tyrol', 1, 32),
-    (9, 'Callandra', 'Henderson', NULL, NULL);
-
--- Certification-People relationship table
-CREATE TABLE `bsg_cert_people` (
-    `cid` INT(11) NOT NULL DEFAULT '0',
-    `pid` INT(11) NOT NULL DEFAULT '0',
-    PRIMARY KEY (`cid`, `pid`),
-    KEY `pid` (`pid`),
-    CONSTRAINT `bsg_cert_people_ibfk_1` FOREIGN KEY (`cid`) REFERENCES `bsg_cert` (`id`),
-    CONSTRAINT `bsg_cert_people_ibfk_2` FOREIGN KEY (`pid`) REFERENCES `bsg_people` (`id`)
+CREATE TABLE IF NOT EXISTS Rentals (
+  rental_id INT AUTO_INCREMENT PRIMARY KEY,
+  customer_id INT NOT NULL,
+  bike_id INT NOT NULL,
+  rental_date TIMESTAMP NOT NULL,
+  return_date TIMESTAMP NOT NULL,
+  total_cost DECIMAL(6,2) NOT NULL,
+  FOREIGN KEY (customer_id) REFERENCES Customers(customer_id) ON DELETE CASCADE,
+  FOREIGN KEY (bike_id) REFERENCES Bikes(bike_id) ON DELETE CASCADE
 );
 
-INSERT INTO
-    `bsg_cert_people` (`cid`, `pid`)
+-- Insert example data into Rentals table
+INSERT INTO Rentals (customer_id, bike_id, rental_date, return_date, total_cost)
 VALUES
-    (2, 2),
-    (4, 2),
-    (4, 3),
-    (2, 4),
-    (4, 6),
-    (1, 7),
-    (3, 8),
-    (3, 9);
+(1, 1, '2025-01-15 15:00:00', '2025-01-15 17:00:00', 20.00),
+(2, 2, '2025-02-05 12:00:00', '2025-02-05 14:00:00', 30.00),
+(3, 3, '2025-02-08 13:30:00', '2025-02-08 15:30:00', 40.00);
+
+-----------------------------------------------------
+-- Create Table Payments
+-----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS Payments (
+  payment_id INT AUTO_INCREMENT PRIMARY KEY,
+  rental_id INT NOT NULL,
+  amount DECIMAL(6,2) NOT NULL,
+  payment_date TIMESTAMP NOT NULL,
+  paid TINYINT(1) NOT NULL, -- boolean type
+  FOREIGN KEY (rental_id) REFERENCES Rentals(rental_id) ON DELETE CASCADE
+);
+
+-- Insert example data into Payments table
+INSERT INTO Payments (rental_id, amount, payment_date, paid)
+VALUES
+(1, 20.00, '2025-01-15 17:00:00', 1),
+(2, 30.00, '2025-02-05 14:00:00', 1),
+(3, 40.00, '2025-02-08 15:30:00', 1);
+
+-----------------------------------------------------
+-- Create Table MaintenanceLogs 
+-----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS MaintenanceLogs (
+  maintenance_id INT AUTO_INCREMENT PRIMARY KEY,
+  bike_id INT NOT NULL,
+  service_date TIMESTAMP NULL,
+  description TEXT,
+  FOREIGN KEY (bike_id) REFERENCES Bikes(bike_id) ON DELETE CASCADE
+);
+
+-- Insert example data into MaintenanceLogs table
+INSERT INTO MaintenanceLogs (bike_id, service_date, description)
+VALUES
+(1, '2025-01-15 17:00:00', 'Replaced the tire and chain.'),
+(2, '2025-02-05 14:00:00', 'Replaced the brake pads.'),
+(3, '2025-02-08 15:30:00', 'Replaced the battery.');
+
+-----------------------------------------------------
+-- Create Table CustomerPayments Intersection Table
+-----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS CustomerPayments (
+  customer_id INT NOT NULL,
+  payment_id INT NOT NULL,
+  PRIMARY KEY (customer_id, payment_id),
+  FOREIGN KEY (customer_id) REFERENCES Customers(customer_id) ON DELETE CASCADE,
+  FOREIGN KEY (payment_id) REFERENCES Payments(payment_id) ON DELETE CASCADE
+);
+
+-- Insert example data into CustomerPayments table
+INSERT INTO CustomerPayments (customer_id, payment_id)
+VALUES
+(1, 1),
+(2, 2),
+(3, 3);
+
+-----------------------------------------------------
+-- Create Table BikeMaintenanceLogs Intersection Table
+-----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS BikeMaintenanceLogs (
+  bike_id INT NOT NULL,
+  maintenance_id INT NOT NULL,
+  PRIMARY KEY (bike_id, maintenance_id),
+  FOREIGN KEY (bike_id) REFERENCES Bikes(bike_id) ON DELETE CASCADE,
+  FOREIGN KEY (maintenance_id) REFERENCES MaintenanceLogs(maintenance_id) ON DELETE CASCADE
+);
+
+-- Insert example data into BikeMaintenanceLogs table
+INSERT INTO BikeMaintenanceLogs (bike_id, maintenance_id)
+VALUES
+(1, 1),
+(2, 2),
+(3, 3);
 
 -- Re-enable foreign key checks
-SET
-    foreign_key_checks = 1;
+SET FOREIGN_KEY_CHECKS=1;
+COMMIT;

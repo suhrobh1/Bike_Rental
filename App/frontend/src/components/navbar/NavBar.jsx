@@ -18,6 +18,9 @@ const Navbar = () => {
           <li>
             <Link to="/people">BSG People</Link>
           </li>
+          <li>
+            <Link to="/customers">Customers</Link>
+          </li>
         </ul>
       </nav>
     </header>

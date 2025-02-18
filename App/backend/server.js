@@ -15,11 +15,34 @@ app.use(express.json());
 
 // API Routes for backend CRUD:
 app.use("/api/people", require("./routes/peopleRoutes"));
-
+app.use("/api/customers", require("./routes/customerRoutes"));
 
 // Add your Connect DB Activitiy Code Below:
 // ...
+// Match to your database config route
+const db = require('./database/config');
 
+// define a new GET request with express:
+app.get('/api/diagnostic', async (req, res) => {
+  try {
+    const connection = db.pool.promise();
+    console.log("Flag 1!");
+
+    await connection.query('DROP TABLE IF EXISTS diagnostic;');
+    await connection.query(
+      'CREATE TABLE diagnostic(id INT PRIMARY KEY AUTO_INCREMENT, text VARCHAR(255) NOT NULL);'
+    );
+    await connection.query('INSERT INTO diagnostic (text) VALUES ("MySQL is working!")');
+
+    const [results] = await connection.query('SELECT * FROM diagnostic;');
+
+    res.json(results); // Return the actual results array
+
+  } catch (error) {
+    console.error('Database operation failed:', error);
+    res.status(500).send('Server error');
+  }
+});
 
 // ...
 // End Connect DB Activity Code.

@@ -2,6 +2,8 @@ import { Routes, Route, Link } from "react-router-dom";
 import CreatePerson from "../components/bsg_people/CreatePerson";
 import PeopleTable from "../components/bsg_people/PersonTable";
 import UpdatePerson from "../components/bsg_people/UpdatePerson";
+import CustomersTable from "../components/customers/CustomersTable";
+
 
 function PeoplePage() {
   return (
@@ -18,9 +20,11 @@ function PeoplePage() {
         </ul>
       </nav>
       <Routes>
-        <Route path="/" element={<PeopleTable />} />
-        <Route path="/add" element={<CreatePerson />} />
-        <Route path="/edit/:id" element={<UpdatePerson />} />
+        <Route path="/" element={<CustomersTable />} />
+        {/* <Route path="/" element={<PeopleTable />} /> */}
+
+        {/* <Route path="/add" element={<CreatePerson />} />
+        <Route path="/edit/:id" element={<UpdatePerson />} /> */}
       </Routes>
     </div>
   );
