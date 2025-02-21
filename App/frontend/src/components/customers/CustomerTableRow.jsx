@@ -19,8 +19,11 @@ const TableRow = ({ customer, fetchCustomers }) => {
     try {
       console.log("In TableRow, ln 19 | customer", customer.customer_id);
       const URL = import.meta.env.VITE_API_URL + "customers/" + customer.customer_id;
+      console.log("URL", URL)
       const response = await axios.delete(URL);
+      console.log("In CustomerTableRow, ln 22 | Flag 3")
       // Ensure that the customer was deleted successfully
+      console.log("In CustomerTableRow, ln 24 | response.status", response.status);
       if (response.status === 204) {
         alert("Customer deleted successfully");
       }
@@ -33,6 +36,7 @@ const TableRow = ({ customer, fetchCustomers }) => {
 
   return (
     <tr key={customer.customer_id}>
+      <td>{customer.customer_id}</td>
       <td>{customer.customerq}</td>
       <td>{customer.name}</td>
       <td>{customer.email}</td>

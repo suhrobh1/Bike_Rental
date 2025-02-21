@@ -1,5 +1,5 @@
-import (useState) from "react";
-import (useNavigate) from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function CreateCustomer(){
@@ -17,7 +17,6 @@ function CreateCustomer(){
       name: formData.name,
       email: formData.email,
       phone: formData.phone,
-    }
   };
 
 
@@ -37,7 +36,7 @@ function CreateCustomer(){
   };
 
   const resetFormFields = () =>{
-    setFormDat({
+    setFormData({
       name: "",
       email: "",
       phone: "",
@@ -45,9 +44,9 @@ function CreateCustomer(){
   };
   const handleInputChange = (e) =>{
     const {name, value} = e.target;
-    console.log("In createCustomer, ln 48 | prevData:", prevData);
-    setFormData((prevData) => ({
-      ...prevData,
+    console.log("In createCustomer, ln 48 | formData:", formData);
+    setFormData((formData) => ({
+      ...formData,
       [name]: value,
     }));
   };
@@ -72,25 +71,17 @@ function CreateCustomer(){
         />
         <label htmlFor="phone">Phone</label>
         <input
-          type="number"
+          type="text"
           name="phone"
           value={formData.phone}
           onChange={handleInputChange}
         />
-        <label htmlFor="age">Age</label>
-        <input type="number" name="age" value={formData.age} onChange={handleInputChange} />
         <button type="submit">Add Customer</button>
       </form>
     </>
     );
+
     }
 
-    export default CreateCustomer;
     
-  )
-  
-  
-
-
-
- 
+ export default CreateCustomer;

@@ -78,16 +78,14 @@ const updateCustomer = async (req, res) =>{
 
 
 
-
-
-
 const deleteCustomer = async (req, res) => {
     console.log("customer_id from params", req.params.id);
     const customerId = req.params.id;
 
     try{
 
-        const [isExisting] = await db.query("SELECT * FROM Customers WHERE customer_id = ?", [customerId]);
+        const [isExisting] = await db.query(
+            "SELECT * FROM Customers WHERE customer_id = ?", [customerId]);
 
         // If customer does not exist
         if (isExisting.length === 0){
@@ -95,12 +93,17 @@ const deleteCustomer = async (req, res) => {
         }
         
         // Delete the customer from interstection table CustomerPayments
-        const [response] = await db.query("DELETE FROM CustomerPayments WHERE customer_id = ?", [customerId]);
-        console.log("Deleted", response.affectedRows, 'rows from CustomerPayments intersection table' );
+        const [response] = await db.query(
+            "DELETE FROM CustomerPayments WHERE customer_id = ?",
+             [customerId]);
+        console.log(
+            "Deleted",
+             response.affectedRows,
+              'rows from CustomerPayments intersection table' );
 
         //Deleting customer from the Customers table
         await db.query("DELETE FROM Customers WHERE customer_id = ?", [customerId]);
-
+        res.status(204).json({ message: "Customer deleted successfully" })        
     }catch(error){
         console.error(" Customer deletion error", error);
         res.status(500).json({error: error.message});

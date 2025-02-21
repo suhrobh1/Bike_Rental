@@ -14,8 +14,8 @@ app.use(cors({ credentials: true, origin: "*" }));
 app.use(express.json());
 
 // API Routes for backend CRUD:
-app.use("/api/people", require("./routes/peopleRoutes"));
 app.use("/api/customers", require("./routes/customerRoutes"));
+app.use("/api/bikes", require("./routes/bikesRoutes"));
 
 // Add your Connect DB Activitiy Code Below:
 // ...
